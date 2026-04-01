@@ -23,13 +23,13 @@ Once you've restarted n8n with the `n8n-nodes-alphaloops-freight` package instal
 1. Open your desired workflow and go to the `Credentials` tab:
 
 <p>
-    <img src="./../readme_images/alphaloops-n8n-ss-1.png" width="50%"/>
+    <img src="./images/alphaloops-n8n-ss-1.png" width="50%"/>
 </p>
 
 2. You'll see `AlphaLoops` as an option, click the triple dots to `open`:
 
 <p>
-    <img src="./../readme_images/alphaloops-n8n-ss-2.png" width="50%"/>
+    <img src="./images/alphaloops-n8n-ss-2.png" width="50%"/>
 </p>
 
 3. Enter your API key and save it.
@@ -37,7 +37,7 @@ Once you've restarted n8n with the `n8n-nodes-alphaloops-freight` package instal
 4. At this point, you can inset AlphaLoops calls into your n8n workflows:
 
 <p>
-    <img src="./../readme_images/alphaloops-n8n-ss-3.png" width="50%"/>
+    <img src="./images/alphaloops-n8n-ss-3.png" width="50%"/>
 </p>
 
 
@@ -112,4 +112,4 @@ Full API docs: [runalphaloops.com/fmcsa-api/docs](https://runalphaloops.com/fmcs
 
 ## License
 
-[MIT](https://github.com/RunAlphaLoop/freight-sdk/blob/main/LICENSE)
+[MIT](https://github.com/RunAlphaLoop/n8n-nodes-alphaloops-freight/blob/main/LICENSE)
