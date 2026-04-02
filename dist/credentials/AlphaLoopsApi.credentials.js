@@ -17,5 +17,19 @@ class AlphaLoopsApi {
             description: 'Your AlphaLoops API key from runalphaloops.com',
         },
     ];
+    authenticate = {
+        type: 'generic',
+        properties: {
+            headers: {
+                Authorization: '=Bearer {{$credentials.apiKey}}',
+            },
+        },
+    };
+    test = {
+        request: {
+            baseURL: 'https://api.runalphaloops.com',
+            url: '/v1/carriers/2247505',
+        },
+    };
 }
 exports.AlphaLoopsApi = AlphaLoopsApi;

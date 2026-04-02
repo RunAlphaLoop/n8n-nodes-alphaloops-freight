@@ -1,4 +1,6 @@
 import type {
+	IAuthenticateGeneric,
+	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
 } from 'n8n-workflow';
@@ -20,4 +22,20 @@ export class AlphaLoopsApi implements ICredentialType {
 			description: 'Your AlphaLoops API key from runalphaloops.com',
 		},
 	];
+
+	authenticate: IAuthenticateGeneric = {
+		type: 'generic',
+		properties: {
+			headers: {
+				Authorization: '=Bearer {{$credentials.apiKey}}',
+			},
+		},
+	};
+
+	test: ICredentialTestRequest = {
+		request: {
+			baseURL: 'https://api.runalphaloops.com',
+			url: '/v1/carriers/2247505',
+		},
+	};
 }
