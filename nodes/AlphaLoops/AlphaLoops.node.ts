@@ -10,7 +10,7 @@ export class AlphaLoops implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'AlphaLoops Freight API',
 		name: 'alphaLoops',
-		icon: 'file:alphaloops.png',
+		icon: 'file:alphaloops.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter.resource + ($parameter.operation ? ": " + $parameter.operation : "")}}',

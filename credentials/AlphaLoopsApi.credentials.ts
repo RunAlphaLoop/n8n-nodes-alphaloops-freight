@@ -7,8 +7,8 @@ import type {
 
 export class AlphaLoopsApi implements ICredentialType {
 	name = 'alphaLoopsApi';
-	displayName = 'AlphaLoops API';
-	documentationUrl = 'https://runalphaloops.com/fmcsa-api/docs';
+	displayName = 'AlphaLoops Freight API';
+	documentationUrl = 'https://github.com/RunAlphaLoop/n8n-nodes-alphaloops-freight';
 
 	properties: INodeProperties[] = [
 		{

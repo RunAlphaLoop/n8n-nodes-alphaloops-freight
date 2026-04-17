@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AlphaLoopsApi = void 0;
 class AlphaLoopsApi {
     name = 'alphaLoopsApi';
-    displayName = 'AlphaLoops API';
-    documentationUrl = 'https://runalphaloops.com/fmcsa-api/docs';
+    displayName = 'AlphaLoops Freight API';
+    documentationUrl = 'https://github.com/RunAlphaLoop/n8n-nodes-alphaloops-freight';
     properties = [
         {
             displayName: 'API Key',
