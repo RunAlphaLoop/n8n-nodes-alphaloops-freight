@@ -19,7 +19,7 @@ export class AlphaLoopsApi implements ICredentialType {
 			default: '',
 			required: true,
 			placeholder: 'ak_...',
-			description: 'Your AlphaLoops API key from dashboard.runalphaloops.com',
+			description: 'Your AlphaLoops API key from https://alphafreight.runalphaloops.com/',
 		},
 	];
 
