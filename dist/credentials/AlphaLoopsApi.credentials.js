@@ -14,7 +14,7 @@ class AlphaLoopsApi {
             default: '',
             required: true,
             placeholder: 'ak_...',
-            description: 'Your AlphaLoops API key from runalphaloops.com',
+            description: 'Your AlphaLoops API key from dashboard.runalphaloops.com',
         },
     ];
     authenticate = {

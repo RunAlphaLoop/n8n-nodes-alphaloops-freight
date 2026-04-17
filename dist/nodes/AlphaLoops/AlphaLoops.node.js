@@ -4,12 +4,12 @@ exports.AlphaLoops = void 0;
 const client_1 = require("./sdk/client");
 class AlphaLoops {
     description = {
-        displayName: 'AlphaLoops',
+        displayName: 'AlphaLoops Freight API',
         name: 'alphaLoops',
-        icon: 'file:alphaloops.svg',
+        icon: 'file:alphaloops.png',
         group: ['transform'],
         version: 1,
-        subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
+        subtitle: '={{$parameter.resource + ($parameter.operation ? ": " + $parameter.operation : "")}}',
         description: 'FMCSA carrier data — profiles, fleet, inspections, crashes, authority, news, contacts',
         defaults: {
             name: 'AlphaLoops',

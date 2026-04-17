@@ -8,12 +8,12 @@ import { AlphaLoops as AlphaLoopsClient } from './sdk/client';
 
 export class AlphaLoops implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'AlphaLoops',
+		displayName: 'AlphaLoops Freight API',
 		name: 'alphaLoops',
-		icon: 'file:alphaloops.svg',
+		icon: 'file:alphaloops.png',
 		group: ['transform'],
 		version: 1,
-		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
+		subtitle: '={{$parameter.resource + ($parameter.operation ? ": " + $parameter.operation : "")}}',
 		description: 'FMCSA carrier data — profiles, fleet, inspections, crashes, authority, news, contacts',
 		defaults: {
 			name: 'AlphaLoops',
