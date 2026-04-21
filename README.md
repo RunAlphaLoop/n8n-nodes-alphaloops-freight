@@ -10,7 +10,7 @@ You need an AlphaLoops API key. Sign up at [runalphaloops.com](https://runalphal
 
 ## Installation (n8n Hosted)
 
-Unfortunately, n8n does not allow installation of packages. However, you can call [AlphaLoops' MCP server](https://mcp-freight.runalphaloops.com/) or [REST API](https://runalphaloops.com/fmcsa-api) from n8n.
+The hosted n8n does not allow installation of arbitrary third-party packages. We have submitted this package to n8n for review and will update this README when it is approved.
 
 ## Installation (Self Hosted n8n)
 
