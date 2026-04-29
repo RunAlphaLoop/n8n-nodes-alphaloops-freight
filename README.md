@@ -61,20 +61,20 @@ Once you've restarted n8n with the `n8n-nodes-alphaloops-freight` package instal
 | **Get Trucks** | List registered trucks for a carrier by DOT number |
 | **Get Trailers** | List registered trailers for a carrier by DOT number |
 
-### Inspections
+### Inspection
 
 | Operation | Description |
 |---|---|
 | **List** | List roadside inspection records for a carrier |
 | **Get Violations** | Get violations for a specific inspection by ID |
 
-### Crashes
+### Crash
 
 | Operation | Description |
 |---|---|
 | **List** | List crash records for a carrier, with optional severity and date filters |
 
-### Contacts
+### Contact
 
 | Operation | Description |
 |---|---|
@@ -102,7 +102,7 @@ Once you've restarted n8n with the `n8n-nodes-alphaloops-freight` package instal
 
 ### Search for contacts at a carrier
 
-1. Add an **AlphaLoops** node, set Resource to **Contacts**, Operation to **Search**
+1. Add an **AlphaLoops** node, set Resource to **Contact**, Operation to **Search**
 2. Enter a DOT number and optionally filter by job title or seniority level
 3. Chain an **Enrich** operation to get verified contact details
 

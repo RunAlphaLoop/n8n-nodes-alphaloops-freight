@@ -3,7 +3,9 @@ import type {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
+	JsonObject,
 } from 'n8n-workflow';
+import { NodeApiError } from 'n8n-workflow';
 import { AlphaLoops as AlphaLoopsClient } from './sdk/client';
 
 export class AlphaLoops implements INodeType {
@@ -35,10 +37,10 @@ export class AlphaLoops implements INodeType {
 				noDataExpression: true,
 				options: [
 					{ name: 'Carrier', value: 'carrier' },
-					{ name: 'Contacts', value: 'contacts' },
-					{ name: 'Crashes', value: 'crashes' },
+					{ name: 'Contact', value: 'contact' },
+					{ name: 'Crash', value: 'crash' },
 					{ name: 'Fleet', value: 'fleet' },
-					{ name: 'Inspections', value: 'inspections' },
+					{ name: 'Inspection', value: 'inspection' },
 				],
 				default: 'carrier',
 			},
@@ -81,7 +83,7 @@ export class AlphaLoops implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
-				displayOptions: { show: { resource: ['inspections'] } },
+				displayOptions: { show: { resource: ['inspection'] } },
 				options: [
 					{ name: 'List', value: 'list', description: 'List roadside inspections for a carrier', action: 'List carrier inspections' },
 					{ name: 'Get Violations', value: 'violations', description: 'Get violations for a specific inspection', action: 'Get inspection violations' },
@@ -95,7 +97,7 @@ export class AlphaLoops implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
-				displayOptions: { show: { resource: ['crashes'] } },
+				displayOptions: { show: { resource: ['crash'] } },
 				options: [
 					{ name: 'List', value: 'list', description: 'List crash records for a carrier', action: 'List carrier crashes' },
 				],
@@ -108,7 +110,7 @@ export class AlphaLoops implements INodeType {
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
-				displayOptions: { show: { resource: ['contacts'] } },
+				displayOptions: { show: { resource: ['contact'] } },
 				options: [
 					{ name: 'Search', value: 'search', description: 'Find people at a carrier or company', action: 'Search contacts' },
 					{ name: 'Enrich', value: 'enrich', description: 'Get verified emails and phones for a contact', action: 'Enrich a contact' },
@@ -161,7 +163,7 @@ export class AlphaLoops implements INodeType {
 				description: 'USDOT number of the carrier',
 				displayOptions: {
 					show: {
-						resource: ['inspections'],
+						resource: ['inspection'],
 						operation: ['list'],
 					},
 				},
@@ -176,7 +178,7 @@ export class AlphaLoops implements INodeType {
 				description: 'USDOT number of the carrier',
 				displayOptions: {
 					show: {
-						resource: ['crashes'],
+						resource: ['crash'],
 						operation: ['list'],
 					},
 				},
@@ -388,7 +390,7 @@ export class AlphaLoops implements INodeType {
 				default: {},
 				displayOptions: {
 					show: {
-						resource: ['crashes'],
+						resource: ['crash'],
 						operation: ['list'],
 					},
 				},
@@ -433,7 +435,7 @@ export class AlphaLoops implements INodeType {
 				description: 'The inspection ID to get violations for',
 				displayOptions: {
 					show: {
-						resource: ['inspections'],
+						resource: ['inspection'],
 						operation: ['violations'],
 					},
 				},
@@ -449,7 +451,7 @@ export class AlphaLoops implements INodeType {
 				description: 'USDOT number (provide DOT number and/or company name)',
 				displayOptions: {
 					show: {
-						resource: ['contacts'],
+						resource: ['contact'],
 						operation: ['search'],
 					},
 				},
@@ -462,7 +464,7 @@ export class AlphaLoops implements INodeType {
 				default: {},
 				displayOptions: {
 					show: {
-						resource: ['contacts'],
+						resource: ['contact'],
 						operation: ['search'],
 					},
 				},
@@ -503,7 +505,7 @@ export class AlphaLoops implements INodeType {
 				description: 'The contact ID to enrich (1 credit per new lookup, cached lookups are free)',
 				displayOptions: {
 					show: {
-						resource: ['contacts'],
+						resource: ['contact'],
 						operation: ['enrich'],
 					},
 				},
@@ -539,6 +541,7 @@ export class AlphaLoops implements INodeType {
 
 			let result: any;
 
+			try {
 			// ── Carrier ──
 			if (resource === 'carrier') {
 				if (operation === 'get') {
@@ -618,7 +621,7 @@ export class AlphaLoops implements INodeType {
 			}
 
 			// ── Inspections ──
-			else if (resource === 'inspections') {
+			else if (resource === 'inspection') {
 				if (operation === 'list') {
 					const dot = this.getNodeParameter('dotNumber', i) as string;
 					const limit = this.getNodeParameter('limit', i, 50) as number;
@@ -632,7 +635,7 @@ export class AlphaLoops implements INodeType {
 			}
 
 			// ── Crashes ──
-			else if (resource === 'crashes') {
+			else if (resource === 'crash') {
 				const dot = this.getNodeParameter('dotNumber', i) as string;
 				const limit = this.getNodeParameter('limit', i, 25) as number;
 				const opts = this.getNodeParameter('crashOptions', i, {}) as {
@@ -647,7 +650,7 @@ export class AlphaLoops implements INodeType {
 			}
 
 			// ── Contacts ──
-			else if (resource === 'contacts') {
+			else if (resource === 'contact') {
 				if (operation === 'search') {
 					const dot = this.getNodeParameter('dotNumber', i, '') as string;
 					const limit = this.getNodeParameter('limit', i, 25) as number;
@@ -671,6 +674,9 @@ export class AlphaLoops implements INodeType {
 			// Wrap result — if it's an array-like response with results, output each as separate item
 			if (result !== undefined) {
 				returnData.push({ json: result as any });
+			}
+			} catch (error) {
+				throw new NodeApiError(this.getNode(), error as JsonObject);
 			}
 		}
 
