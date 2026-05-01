@@ -10,7 +10,7 @@ You need an AlphaLoops API key. Sign up at [runalphaloops.com](https://runalphal
 
 ## Installation (n8n Hosted)
 
-The hosted n8n does not allow installation of arbitrary third-party packages. We have submitted this package to n8n for review and will update this README when it is approved.
+n8n has approved our package for hosted use and we expect it will be live by around May 21st, 2026. Check back soon!
 
 ## Installation (Self Hosted n8n)
 
