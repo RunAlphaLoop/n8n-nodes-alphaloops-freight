@@ -46,7 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^8.57.1",
     "@typescript-eslint/parser": "^8.57.1",
     "eslint": "^9.39.4",
-    "n8n-workflow": "^1.72.0",
+    "n8n-workflow": "^2.16.0",
     "typescript": "^5.4"
   }
 }
