@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AlphaLoops = void 0;
+const n8n_workflow_1 = require("n8n-workflow");
 const client_1 = require("./sdk/client");
 class AlphaLoops {
     description = {
@@ -31,10 +32,10 @@ class AlphaLoops {
                 noDataExpression: true,
                 options: [
                     { name: 'Carrier', value: 'carrier' },
-                    { name: 'Contacts', value: 'contacts' },
-                    { name: 'Crashes', value: 'crashes' },
+                    { name: 'Contact', value: 'contact' },
+                    { name: 'Crash', value: 'crash' },
                     { name: 'Fleet', value: 'fleet' },
-                    { name: 'Inspections', value: 'inspections' },
+                    { name: 'Inspection', value: 'inspection' },
                 ],
                 default: 'carrier',
             },
@@ -74,7 +75,7 @@ class AlphaLoops {
                 name: 'operation',
                 type: 'options',
                 noDataExpression: true,
-                displayOptions: { show: { resource: ['inspections'] } },
+                displayOptions: { show: { resource: ['inspection'] } },
                 options: [
                     { name: 'List', value: 'list', description: 'List roadside inspections for a carrier', action: 'List carrier inspections' },
                     { name: 'Get Violations', value: 'violations', description: 'Get violations for a specific inspection', action: 'Get inspection violations' },
@@ -87,7 +88,7 @@ class AlphaLoops {
                 name: 'operation',
                 type: 'options',
                 noDataExpression: true,
-                displayOptions: { show: { resource: ['crashes'] } },
+                displayOptions: { show: { resource: ['crash'] } },
                 options: [
                     { name: 'List', value: 'list', description: 'List crash records for a carrier', action: 'List carrier crashes' },
                 ],
@@ -99,7 +100,7 @@ class AlphaLoops {
                 name: 'operation',
                 type: 'options',
                 noDataExpression: true,
-                displayOptions: { show: { resource: ['contacts'] } },
+                displayOptions: { show: { resource: ['contact'] } },
                 options: [
                     { name: 'Search', value: 'search', description: 'Find people at a carrier or company', action: 'Search contacts' },
                     { name: 'Enrich', value: 'enrich', description: 'Get verified emails and phones for a contact', action: 'Enrich a contact' },
@@ -150,7 +151,7 @@ class AlphaLoops {
                 description: 'USDOT number of the carrier',
                 displayOptions: {
                     show: {
-                        resource: ['inspections'],
+                        resource: ['inspection'],
                         operation: ['list'],
                     },
                 },
@@ -165,7 +166,7 @@ class AlphaLoops {
                 description: 'USDOT number of the carrier',
                 displayOptions: {
                     show: {
-                        resource: ['crashes'],
+                        resource: ['crash'],
                         operation: ['list'],
                     },
                 },
@@ -368,7 +369,7 @@ class AlphaLoops {
                 default: {},
                 displayOptions: {
                     show: {
-                        resource: ['crashes'],
+                        resource: ['crash'],
                         operation: ['list'],
                     },
                 },
@@ -412,7 +413,7 @@ class AlphaLoops {
                 description: 'The inspection ID to get violations for',
                 displayOptions: {
                     show: {
-                        resource: ['inspections'],
+                        resource: ['inspection'],
                         operation: ['violations'],
                     },
                 },
@@ -427,7 +428,7 @@ class AlphaLoops {
                 description: 'USDOT number (provide DOT number and/or company name)',
                 displayOptions: {
                     show: {
-                        resource: ['contacts'],
+                        resource: ['contact'],
                         operation: ['search'],
                     },
                 },
@@ -440,7 +441,7 @@ class AlphaLoops {
                 default: {},
                 displayOptions: {
                     show: {
-                        resource: ['contacts'],
+                        resource: ['contact'],
                         operation: ['search'],
                     },
                 },
@@ -480,7 +481,7 @@ class AlphaLoops {
                 description: 'The contact ID to enrich (1 credit per new lookup, cached lookups are free)',
                 displayOptions: {
                     show: {
-                        resource: ['contacts'],
+                        resource: ['contact'],
                         operation: ['enrich'],
                     },
                 },
@@ -510,124 +511,129 @@ class AlphaLoops {
             const resource = this.getNodeParameter('resource', i);
             const operation = this.getNodeParameter('operation', i);
             let result;
-            // ── Carrier ──
-            if (resource === 'carrier') {
-                if (operation === 'get') {
-                    const dot = this.getNodeParameter('dotNumber', i);
-                    const fields = this.getNodeParameter('fields', i, '');
-                    result = await al.carriers.get(dot, fields || undefined);
-                }
-                else if (operation === 'getByMc') {
-                    const mc = this.getNodeParameter('mcNumber', i);
-                    const fields = this.getNodeParameter('fields', i, '');
-                    result = await al.carriers.getByMc(mc, fields || undefined);
-                }
-                else if (operation === 'search') {
-                    const name = this.getNodeParameter('companyName', i);
-                    const limit = this.getNodeParameter('limit', i, 25);
-                    const opts = this.getNodeParameter('searchOptions', i, {});
-                    result = await al.carriers.search(name, {
-                        limit,
-                        ...(opts.state ? { state: opts.state } : {}),
-                        ...(opts.city ? { city: opts.city } : {}),
-                        ...(opts.domain ? { domain: opts.domain } : {}),
-                    });
-                }
-                else if (operation === 'filteredQuery') {
-                    const includeRaw = this.getNodeParameter('includeFilters', i);
-                    const include = typeof includeRaw === 'string' ? JSON.parse(includeRaw) : includeRaw;
-                    const excludeRaw = this.getNodeParameter('excludeFilters', i, '');
-                    let exclude;
-                    if (excludeRaw && typeof excludeRaw === 'string' && excludeRaw.trim()) {
-                        exclude = JSON.parse(excludeRaw);
+            try {
+                // ── Carrier ──
+                if (resource === 'carrier') {
+                    if (operation === 'get') {
+                        const dot = this.getNodeParameter('dotNumber', i);
+                        const fields = this.getNodeParameter('fields', i, '');
+                        result = await al.carriers.get(dot, fields || undefined);
                     }
-                    else if (excludeRaw && typeof excludeRaw === 'object' && Object.keys(excludeRaw).length > 0) {
-                        exclude = excludeRaw;
+                    else if (operation === 'getByMc') {
+                        const mc = this.getNodeParameter('mcNumber', i);
+                        const fields = this.getNodeParameter('fields', i, '');
+                        result = await al.carriers.getByMc(mc, fields || undefined);
                     }
-                    const limit = this.getNodeParameter('limit', i, 25);
-                    const opts = this.getNodeParameter('filteredQueryOptions', i, {});
-                    result = await al.carriers.filteredQuery(include, {
-                        limit,
-                        exclude,
-                        ...(opts.sortBy ? { sortBy: opts.sortBy } : {}),
-                        ...(opts.sortOrder ? { sortOrder: opts.sortOrder } : {}),
-                        ...(opts.fields ? { fields: opts.fields } : {}),
-                    });
+                    else if (operation === 'search') {
+                        const name = this.getNodeParameter('companyName', i);
+                        const limit = this.getNodeParameter('limit', i, 25);
+                        const opts = this.getNodeParameter('searchOptions', i, {});
+                        result = await al.carriers.search(name, {
+                            limit,
+                            ...(opts.state ? { state: opts.state } : {}),
+                            ...(opts.city ? { city: opts.city } : {}),
+                            ...(opts.domain ? { domain: opts.domain } : {}),
+                        });
+                    }
+                    else if (operation === 'filteredQuery') {
+                        const includeRaw = this.getNodeParameter('includeFilters', i);
+                        const include = typeof includeRaw === 'string' ? JSON.parse(includeRaw) : includeRaw;
+                        const excludeRaw = this.getNodeParameter('excludeFilters', i, '');
+                        let exclude;
+                        if (excludeRaw && typeof excludeRaw === 'string' && excludeRaw.trim()) {
+                            exclude = JSON.parse(excludeRaw);
+                        }
+                        else if (excludeRaw && typeof excludeRaw === 'object' && Object.keys(excludeRaw).length > 0) {
+                            exclude = excludeRaw;
+                        }
+                        const limit = this.getNodeParameter('limit', i, 25);
+                        const opts = this.getNodeParameter('filteredQueryOptions', i, {});
+                        result = await al.carriers.filteredQuery(include, {
+                            limit,
+                            exclude,
+                            ...(opts.sortBy ? { sortBy: opts.sortBy } : {}),
+                            ...(opts.sortOrder ? { sortOrder: opts.sortOrder } : {}),
+                            ...(opts.fields ? { fields: opts.fields } : {}),
+                        });
+                    }
+                    else if (operation === 'authority') {
+                        const dot = this.getNodeParameter('dotNumber', i);
+                        const limit = this.getNodeParameter('limit', i, 50);
+                        result = await al.carriers.authority(dot, { limit });
+                    }
+                    else if (operation === 'news') {
+                        const dot = this.getNodeParameter('dotNumber', i);
+                        const limit = this.getNodeParameter('limit', i, 25);
+                        const opts = this.getNodeParameter('newsOptions', i, {});
+                        result = await al.carriers.news(dot, {
+                            limit,
+                            ...(opts.startDate ? { startDate: opts.startDate } : {}),
+                            ...(opts.endDate ? { endDate: opts.endDate } : {}),
+                        });
+                    }
                 }
-                else if (operation === 'authority') {
+                // ── Fleet ──
+                else if (resource === 'fleet') {
                     const dot = this.getNodeParameter('dotNumber', i);
                     const limit = this.getNodeParameter('limit', i, 50);
-                    result = await al.carriers.authority(dot, { limit });
+                    if (operation === 'trucks') {
+                        result = await al.fleet.trucks(dot, { limit });
+                    }
+                    else if (operation === 'trailers') {
+                        result = await al.fleet.trailers(dot, { limit });
+                    }
                 }
-                else if (operation === 'news') {
+                // ── Inspections ──
+                else if (resource === 'inspection') {
+                    if (operation === 'list') {
+                        const dot = this.getNodeParameter('dotNumber', i);
+                        const limit = this.getNodeParameter('limit', i, 50);
+                        result = await al.inspections.list(dot, { limit });
+                    }
+                    else if (operation === 'violations') {
+                        const inspId = this.getNodeParameter('inspectionId', i);
+                        const limit = this.getNodeParameter('limit', i, 25);
+                        result = await al.inspections.violations(inspId, { limit });
+                    }
+                }
+                // ── Crashes ──
+                else if (resource === 'crash') {
                     const dot = this.getNodeParameter('dotNumber', i);
                     const limit = this.getNodeParameter('limit', i, 25);
-                    const opts = this.getNodeParameter('newsOptions', i, {});
-                    result = await al.carriers.news(dot, {
+                    const opts = this.getNodeParameter('crashOptions', i, {});
+                    result = await al.crashes.list(dot, {
                         limit,
+                        ...(opts.severity ? { severity: opts.severity } : {}),
                         ...(opts.startDate ? { startDate: opts.startDate } : {}),
                         ...(opts.endDate ? { endDate: opts.endDate } : {}),
                     });
                 }
-            }
-            // ── Fleet ──
-            else if (resource === 'fleet') {
-                const dot = this.getNodeParameter('dotNumber', i);
-                const limit = this.getNodeParameter('limit', i, 50);
-                if (operation === 'trucks') {
-                    result = await al.fleet.trucks(dot, { limit });
+                // ── Contacts ──
+                else if (resource === 'contact') {
+                    if (operation === 'search') {
+                        const dot = this.getNodeParameter('dotNumber', i, '');
+                        const limit = this.getNodeParameter('limit', i, 25);
+                        const opts = this.getNodeParameter('contactSearchOptions', i, {});
+                        result = await al.contacts.search({
+                            limit,
+                            ...(dot ? { dotNumber: dot } : {}),
+                            ...(opts.companyName ? { companyName: opts.companyName } : {}),
+                            ...(opts.jobTitle ? { jobTitle: opts.jobTitle } : {}),
+                            ...(opts.jobTitleLevels ? { jobTitleLevels: opts.jobTitleLevels } : {}),
+                        });
+                    }
+                    else if (operation === 'enrich') {
+                        const contactId = this.getNodeParameter('contactId', i);
+                        result = await al.contacts.enrich(contactId);
+                    }
                 }
-                else if (operation === 'trailers') {
-                    result = await al.fleet.trailers(dot, { limit });
-                }
-            }
-            // ── Inspections ──
-            else if (resource === 'inspections') {
-                if (operation === 'list') {
-                    const dot = this.getNodeParameter('dotNumber', i);
-                    const limit = this.getNodeParameter('limit', i, 50);
-                    result = await al.inspections.list(dot, { limit });
-                }
-                else if (operation === 'violations') {
-                    const inspId = this.getNodeParameter('inspectionId', i);
-                    const limit = this.getNodeParameter('limit', i, 25);
-                    result = await al.inspections.violations(inspId, { limit });
-                }
-            }
-            // ── Crashes ──
-            else if (resource === 'crashes') {
-                const dot = this.getNodeParameter('dotNumber', i);
-                const limit = this.getNodeParameter('limit', i, 25);
-                const opts = this.getNodeParameter('crashOptions', i, {});
-                result = await al.crashes.list(dot, {
-                    limit,
-                    ...(opts.severity ? { severity: opts.severity } : {}),
-                    ...(opts.startDate ? { startDate: opts.startDate } : {}),
-                    ...(opts.endDate ? { endDate: opts.endDate } : {}),
-                });
-            }
-            // ── Contacts ──
-            else if (resource === 'contacts') {
-                if (operation === 'search') {
-                    const dot = this.getNodeParameter('dotNumber', i, '');
-                    const limit = this.getNodeParameter('limit', i, 25);
-                    const opts = this.getNodeParameter('contactSearchOptions', i, {});
-                    result = await al.contacts.search({
-                        limit,
-                        ...(dot ? { dotNumber: dot } : {}),
-                        ...(opts.companyName ? { companyName: opts.companyName } : {}),
-                        ...(opts.jobTitle ? { jobTitle: opts.jobTitle } : {}),
-                        ...(opts.jobTitleLevels ? { jobTitleLevels: opts.jobTitleLevels } : {}),
-                    });
-                }
-                else if (operation === 'enrich') {
-                    const contactId = this.getNodeParameter('contactId', i);
-                    result = await al.contacts.enrich(contactId);
+                // Wrap result — if it's an array-like response with results, output each as separate item
+                if (result !== undefined) {
+                    returnData.push({ json: result });
                 }
             }
-            // Wrap result — if it's an array-like response with results, output each as separate item
-            if (result !== undefined) {
-                returnData.push({ json: result });
+            catch (error) {
+                throw new n8n_workflow_1.NodeApiError(this.getNode(), error);
             }
         }
         return [returnData];
